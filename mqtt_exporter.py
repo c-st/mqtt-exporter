@@ -147,7 +147,7 @@ def _topic_matches(topic1, topic2):
         return False
 
     logging.debug(
-        f'_topic_matches: Topic1: {topic1, topic2}, Topic2: {1}')
+        f'_topic_matches: Topic1: {topic1}, Topic2: {topic2}')
     topic1 = re.escape(topic1)
     regex = topic1.replace('/\\#', '.*$').replace('\\+', '[^/]+')
     match = re.match(regex, topic2)
