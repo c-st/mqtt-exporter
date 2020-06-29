@@ -14,7 +14,7 @@ import signal
 import sys
 from yamlreader import yaml_load
 
-VERSION = '1.1'
+VERSION = '1.2'
 
 
 def _read_config(config_path):
@@ -278,7 +278,19 @@ def _update_metrics(metrics, msg):
 
         labels = finalize_labels(labels)
 
+        # Add derived metric for when the message was last received (timestamp in milliseconds)
+        derived_metric = {
+            'name': f"{metric['name']}_last_received",
+            'help': f"Last received message for '{metric['name']}'",
+            'type': metric['type']
+        }
+        derived_labels = {'topic': metric['topic'],
+                          'value': int(round(time.time() * 1000))}
+
         _export_to_prometheus(metric['name'], metric, labels)
+
+        _export_to_prometheus(
+            derived_metric['name'], derived_metric, derived_labels)
 
 
 # noinspection PyUnusedLocal
