@@ -56,9 +56,10 @@ def _parse_config_and_add_defaults(config_from_file):
     # MQTT values
     if 'mqtt' in config_from_file:
         config['mqtt'] = _add_config_and_defaults(
-            config_from_file['mqtt'], {'host': 'localhost'})
+            config_from_file['mqtt'], {'host': 'localhost', 'port': 1883})
     else:
-        config['mqtt'] = _add_config_and_defaults(None, {'host': 'localhost'})
+        config['mqtt'] = _add_config_and_defaults(
+            None, {'host': 'localhost', 'port': 1883})
 
     if 'auth' in config['mqtt']:
         config['mqtt']['auth'] = _add_config_and_defaults(
@@ -78,6 +79,9 @@ def _parse_config_and_add_defaults(config_from_file):
             None, {'exporter_port': 9344})
 
     metrics = {}
+    if not 'metrics' in config_from_file:
+        logging.critical('No metrics defined in config. Aborting.')
+        sys.exit(1)
     for metric in config_from_file['metrics']:
         parse_and_validate_metric_config(metric, metrics)
 
@@ -303,8 +307,14 @@ def _mqtt_init(mqtt_config, metrics):
                                    'ca_certs', 'certfile', 'keyfile', 'cert_reqs', 'tls_version'])
         mqtt_client.tls_set(**tls_config)
 
-    mqtt_client.connect(**_strip_config(mqtt_config,
-                                        ['host', 'port', 'keepalive']))
+    try:
+        mqtt_client.connect(**_strip_config(mqtt_config,
+                                            ['host', 'port', 'keepalive']))
+    except ConnectionRefusedError as err:
+        logging.critical(
+            f"Error connecting to {mqtt_config['host']}:{mqtt_config['port']}: {err.strerror}")
+        sys.exit(1)
+
     return mqtt_client
 
 
