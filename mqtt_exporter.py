@@ -409,7 +409,7 @@ def main():
     add_static_metric(int(time.time() * 1000))
     # Setup argument parsing
     parser = argparse.ArgumentParser(
-        description='Simple program to export formatted mqtt messages to prometheus')
+        description='Simple program to export formatted MQTT messages to Prometheus')
     parser.add_argument('-c', '--config', action='store', dest='config', default='conf',
                         help='Set config location (file or directory), default: \'conf\'')
     options = parser.parse_args()

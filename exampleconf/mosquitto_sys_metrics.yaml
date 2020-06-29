@@ -27,7 +27,7 @@ metrics:
         target_label:   'version'
         action:         'replace'
       - source_labels:  ['__value__']
-        replacement:        '1'
+        replacement:    '\1'
         target_label:   '__value__'
         action:         'replace'
 
@@ -43,7 +43,7 @@ metrics:
         target_label:   'changeset'
         action:         'replace'
       - source_labels:  ['__value__']
-        replacement:        '1'
+        replacement:    '1'
         target_label:   '__value__'
         action:         'replace'
 
@@ -59,6 +59,6 @@ metrics:
         target_label:   'timestamp'
         action:         'replace'
       - source_labels:  ['__value__']
-        replacement:        '1'
+        replacement:    '1'
         target_label:   '__value__'
         action:         'replace'
