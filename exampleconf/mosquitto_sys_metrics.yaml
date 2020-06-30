@@ -1,4 +1,4 @@
-#Config file for Mosquitto broker system metrics
+# Config file for Mosquitto broker system metrics
 
 # Metric definitions
 metrics:
@@ -6,7 +6,6 @@ metrics:
     help:     'System events from broker'
     type:     'gauge'
     topic:    '$SYS/broker/#'
-
     label_configs:
       - source_labels:  ['__msg_topic__']
         target_label:   '__topic__'
@@ -18,16 +17,16 @@ metrics:
     help:     'Mosquitto version (static)'
     type:     'gauge'
     topic:    '$SYS/broker/version'
-
     label_configs:
       - source_labels:  ['__msg_topic__']
         target_label:   '__topic__'
       - source_labels:  ['__value__']
-        regex:          '^\D+((\d+[\.]?)+)$'
+        regex:          '^\D+((?:\d+[\.]?)+)$'
         target_label:   'version'
+        replacement:    '\1'
         action:         'replace'
       - source_labels:  ['__value__']
-        replacement:    '\1'
+        replacement:    '1'
         target_label:   '__value__'
         action:         'replace'
 
@@ -35,7 +34,6 @@ metrics:
     help:     'Mosquitto build changeset (static)'
     type:     'gauge'
     topic:    '$SYS/broker/changeset'
-
     label_configs:
       - source_labels:  ['__msg_topic__']
         target_label:   '__topic__'
@@ -51,7 +49,6 @@ metrics:
     help:     'Mosquitto build timestamp (static)'
     type:     'gauge'
     topic:    '$SYS/broker/timestamp'
-
     label_configs:
       - source_labels:  ['__msg_topic__']
         target_label:   '__topic__'
