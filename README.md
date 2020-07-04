@@ -19,7 +19,7 @@ For your convenience, there is also a Docker image available:
 
 ```bash
 docker run -d \
-  -v "$(pwd)/myconfig:/conf:ro" \
+  -v "$(pwd)/myconfig:/usr/src/app/conf:ro" \
   -p "9344:9344" \
   fhemberger/mqtt_exporter
 ```

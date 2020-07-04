@@ -438,6 +438,7 @@ def main():
 
     # Initial logging to console
     _log_setup({'logfile': '', 'level': 'info'})
+    signal.signal(signal.SIGTERM, _signal_handler)
     signal.signal(signal.SIGINT, _signal_handler)
 
     # Read config file from disk
