@@ -352,7 +352,7 @@ def _export_to_prometheus(name, metric, labels):
         prometheus_metric_types[metric['type'].lower()](
             label_names, label_values, metric, name, value)
         logging.debug(
-            f'_export_to_prometheus metric {name}{labels} updated with value: {value}')
+            f"_export_to_prometheus metric ({metric['type']}): {name}{labels} updated with value: {value}")
     except KeyError:
         logging.warning(
             f"Metric type: {metric['type']}, is not a valid metric type. Must be one of: {list(prometheus_metric_types.keys())}")
@@ -449,8 +449,13 @@ def main():
 
     # Start prometheus exporter
     logging.info(
-        f"Starting prometheus exporter on port: {str(config['prometheus']['exporter_port'])}")
-    prometheus.start_http_server(config['prometheus']['exporter_port'])
+        f"Starting Prometheus exporter on port: {str(config['prometheus']['exporter_port'])}")
+    try:
+        prometheus.start_http_server(config['prometheus']['exporter_port'])
+    except OSError as err:
+        logging.critical(
+            f"Error starting Prometheus exporter: {err.strerror}")
+        sys.exit(1)
 
     # Set up mqtt client and loop forever
     mqtt_client = _mqtt_init(config['mqtt'], config['metrics'])
