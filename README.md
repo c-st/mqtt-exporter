@@ -21,7 +21,7 @@ For your convenience, there is also a Docker image available:
 docker run -d \
   -v "$(pwd)/myconfig:/usr/src/app/conf:ro" \
   -p "9344:9344" \
-  fhemberger/mqtt_exporter
+  ghcr.io/fhemberger/mqtt_exporter
 ```
 
 If you want to mount your configuration to a different directory, add the `-c` flag:
@@ -30,7 +30,7 @@ If you want to mount your configuration to a different directory, add the `-c` f
 docker run -d \
   -v "$(pwd)/myconfig:/myconfig:ro" \
   -p "9344:9344" \
-  fhemberger/mqtt_exporter -c /myconfig
+  ghcr.io/fhemberger/mqtt_exporter -c /myconfig
 ```
 
 
