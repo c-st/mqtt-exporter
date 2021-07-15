@@ -1,5 +1,11 @@
 FROM python:3.9.6-alpine
 
+LABEL org.opencontainers.image.title=mqtt_exporter
+LABEL org.opencontainers.image.description="Prometheus exporter for MQTT."
+LABEL org.opencontainers.image.vendor="Frederic Hemberger"
+LABEL org.opencontainers.image.licenses=MIT
+LABEL org.opencontainers.image.source=https://github.com/fhemberger/mqtt_exporter
+
 WORKDIR /usr/src/app
 
 RUN adduser --system --no-create-home --shell /usr/sbin/nologin mqtt_exporter

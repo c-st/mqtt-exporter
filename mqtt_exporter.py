@@ -14,7 +14,7 @@ import signal
 import sys
 from yamlreader import yaml_load
 
-VERSION = '1.2'
+VERSION = '1.2.2'
 
 
 def _read_config(config_path):
@@ -282,7 +282,7 @@ def _update_metrics(metrics, msg):
         derived_metric = {
             'name': f"{metric['name']}_last_received",
             'help': f"Last received message for '{metric['name']}'",
-            'type': metric['type']
+            'type': 'gauge'
         }
         derived_labels = {'topic': metric['topic'],
                           'value': int(round(time.time() * 1000))}

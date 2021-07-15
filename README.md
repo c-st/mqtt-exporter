@@ -9,7 +9,7 @@ Subscribes to one or more MQTT topics, and lets you configure prometheus metrics
 
 - Create a folder to hold the config (default: `conf/`)
 - Add metric config(s) in YAML format to the folder. Files are combined and read as a single config. (See `exampleconf/metric_example.yaml` for details)
-- Install dependenices with `pip3 install -r requirements.txt`
+- Install dependencies with `pip3 install -r requirements-frozen.txt`
 - Run `./mqtt_exporter.py`
 
 
