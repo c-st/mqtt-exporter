@@ -1,6 +1,6 @@
 ---
 on:
-  create:
+  push:
     tags:
       - '*'
 
@@ -16,6 +16,9 @@ jobs:
 
       - name: Get the tag name
         run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+      - name: Get the tag name
+        run: echo "SHA_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -37,7 +40,7 @@ jobs:
           tags: |
             ${{ github.repository }}:latest
             ${{ github.repository }}:${{ env.TAG }}
-            ${{ github.repository }}:${GITHUB_SHA::7}
+            ${{ github.repository }}:${{ env.SHA_SHORT }}
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ env.TAG }}
-            ghcr.io/user/${{ github.repository }}:${GITHUB_SHA::7}
+            ghcr.io/user/${{ github.repository }}:${{ env.SHA_SHORT }}

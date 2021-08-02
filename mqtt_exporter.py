@@ -14,7 +14,7 @@ import signal
 import sys
 from yamlreader import yaml_load
 
-VERSION = '1.2.2'
+VERSION = '1.2.3'
 
 
 def _read_config(config_path):
