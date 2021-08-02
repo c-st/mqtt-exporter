@@ -14,7 +14,7 @@ import signal
 import sys
 from yamlreader import yaml_load
 
-VERSION = '1.2.3'
+VERSION = '1.2.4'
 
 
 def _read_config(config_path):
@@ -278,7 +278,7 @@ def _update_metrics(metrics, msg):
 
         labels = finalize_labels(labels)
 
-        derived_metric  = metric.setdefault('derived_metric', 
+        derived_metric  = metric.setdefault('derived_metric',
             # Add derived metric for when the message was last received (timestamp in milliseconds)
             {
                 'name': f"{metric['name']}_last_received",
