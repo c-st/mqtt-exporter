@@ -9,7 +9,7 @@ LABEL org.opencontainers.image.source=https://github.com/fhemberger/mqtt_exporte
 WORKDIR /usr/src/app
 
 RUN adduser --system --no-create-home --shell /usr/sbin/nologin mqtt_exporter
-COPY mqtt_exporter.py requirements-frozen.txt ./
+COPY *.py requirements-frozen.txt ./
 COPY utils ./utils
 RUN pip install --no-cache-dir -r requirements-frozen.txt
 

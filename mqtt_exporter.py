@@ -16,8 +16,9 @@ import signal
 import sys
 from yamlreader import yaml_load
 import utils.prometheus_additions
+import version
 
-VERSION = '1.2.4'
+VERSION = version.__version__
 SUFFIXES_PER_TYPE = {
     "gauge": [''],  # add at least an empty suffix
     "counter": ['total'],
