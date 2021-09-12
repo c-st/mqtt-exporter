@@ -6,6 +6,7 @@ Subscribes to one or more MQTT topics, and lets you configure prometheus metrics
 
 [![Test with pytest](https://github.com/fhemberger/mqtt_exporter/actions/workflows/test.yml/badge.svg)](https://github.com/fhemberger/mqtt_exporter/actions/workflows/test.yml)[![CodeQL](https://github.com/fhemberger/mqtt_exporter/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/fhemberger/mqtt_exporter/actions/workflows/codeql-analysis.yml)
 
+
 ## Usage
 
 - Create a folder to hold the config (default: `conf/`)
@@ -42,9 +43,9 @@ docker run -d \
  - PyYAML
  - yamlreader
 
-## Testing
+Functional tests are written in `pytest` (see [tests/readme.md](tests/readme.md)), code formatting uses [`autopep8`](https://pypi.org/project/autopep8/) with default settings. If you submit a PR to this repo, please make sure it follows its formatting guidelines.
 
-pytest is used to test the functionality see [tests/readme.md](tests/readme.md)
+
 ## TODO
 
 - Add persistence of metrics on restart
