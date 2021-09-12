@@ -349,10 +349,10 @@ def _mqtt_init(mqtt_config, metrics):
 def _export_to_prometheus(name, metric, labels):
     """Export metric and labels to prometheus."""
     metric_wrappers = {'gauge': GaugeWrapper,
-                                'counter': CounterWrapper,
-                                'counter_absolute': CounterAbsoluteWrapper,
-                               'summary': SummaryWrapper,
-                               'histogram': HistogramWrapper}
+                       'counter': CounterWrapper,
+                       'counter_absolute': CounterAbsoluteWrapper,
+                       'summary': SummaryWrapper,
+                       'histogram': HistogramWrapper}
     valid_types = metric_wrappers.keys()
     if metric['type'] not in valid_types:
         logging.error(
@@ -366,14 +366,14 @@ def _export_to_prometheus(name, metric, labels):
     sorted_labels = _get_sorted_tuple_list(labels)
     label_names, label_values = list(zip(*sorted_labels))
 
-
     prometheus_metric = None
     if not metric.get('prometheus_metric') or not metric['prometheus_metric'].get('parent'):
         # parent metric not seen before, create metric
         additional_parameters = metric.get('parameters', {})
 
-        metric_wrapper = metric_wrappers[metric['type']] 
-        prometheus_metric = metric_wrapper(metric['name'], metric['help'], label_names, **additional_parameters)
+        metric_wrapper = metric_wrappers[metric['type']]
+        prometheus_metric = metric_wrapper(
+            metric['name'], metric['help'], label_names, **additional_parameters)
         metric['prometheus_metric'] = {}
         metric['prometheus_metric']['parent'] = prometheus_metric
     else:
@@ -385,6 +385,7 @@ def _export_to_prometheus(name, metric, labels):
         f"_export_to_prometheus metric ({metric['type']}): {name}{labels} updated with value: {value}")
     if logging.DEBUG >= logging.root.level:  # log test data only in debugging mode
         _log_test_data(metric, labels['topic'], value)
+
 
 def _log_test_data(metric, topic, value):
     try:
@@ -420,6 +421,7 @@ class GaugeWrapper():
     """
     Wrapper to provide generic interface to Gauge metric
     """
+
     def __init__(self, name, help_text, label_names, *args, **kwargs) -> None:
         self.metric = prometheus.Gauge(
             name, help_text, list(label_names)
@@ -430,10 +432,12 @@ class GaugeWrapper():
         child.set(value)
         return child
 
+
 class CounterWrapper():
     """
     Wrapper to provide generic interface to Counter metric
     """
+
     def __init__(self, name, help_text, label_names, *args, **kwargs) -> None:
         self.metric = prometheus.Counter(
             name, help_text, list(label_names)
@@ -443,6 +447,7 @@ class CounterWrapper():
         child = self.metric.labels(*label_values)
         child.inc(value)
         return child
+
 
 class CounterAbsoluteWrapper():
     """
@@ -459,6 +464,7 @@ class CounterAbsoluteWrapper():
         child.set(value)
         return child
 
+
 class SummaryWrapper():
     """
     Wrapper to provide generic interface to Summary metric
@@ -473,6 +479,7 @@ class SummaryWrapper():
         child = self.metric.labels(*label_values)
         child.observe(value)
         return child
+
 
 class HistogramWrapper():
     """
