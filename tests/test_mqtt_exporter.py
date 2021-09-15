@@ -62,7 +62,11 @@ def _get_mqtt_data(file_name):
             # covert payloud to bytes, as in a MQTT Message
             row[MqttCVS.in_payload] = row[MqttCVS.in_payload].encode('UTF-8')
             # parse labels, to a python object.
-            row[MqttCVS.out_labels] = json.loads(row.get(MqttCVS.out_labels, '{}'))
+            try:
+                row[MqttCVS.out_labels] = json.loads(row.get(MqttCVS.out_labels, '{}'))
+            except json.decoder.JSONDecodeError as jde:
+                logging.error(f"json.decoder.JSONDecodeError while decoding {row.get(MqttCVS.out_labels, '{}')}")
+                raise jde
             # Value could be a JSON, a float or anthing else. 
             try: 
                 row[MqttCVS.out_value] = float(row.get(MqttCVS.out_value))

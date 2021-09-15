@@ -3,7 +3,14 @@ metrics:
   - name:     'mqtt_example'                        # Required(unique, if multiple, only last entry is kept)
     help:     'MQTT example gauge'                  # Required
     type:     'gauge'                               # Required ('gauge', 'counter', 'summary' or 'histogram')
-    #buckets:  '.1, 1.0, 10.0, inf'                 # Optional (Passed as 'buckets' argument to Histogram)
+    #parameters:                                    # Optional parameters for certain metrics
+    #   buckets:                                    # Optional (Passed as 'buckets' argument to Histogram)
+    #     - .1
+    #     - 1.0
+    #     - 10.0
+    #   states:                                     # Optional (Passes as 'states' arguments to Enum)
+    #     - on
+    #     - off
     topic:    'example/topic/+'                     # Required
 
     # Inspired by 'https://prometheus.io/docs/operating/configuration/#<relabel_config>'

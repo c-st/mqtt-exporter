@@ -1,0 +1,58 @@
+
+# Logging
+logging:
+  # logfile:  'conf/mqttexperter.log'                                     # Optional default '' (stdout)
+  level:    'debug'                                 # Optional default 'info'
+
+timescale: 0
+
+# Metric definitions
+metrics:
+  - name: "fhem_light_state"
+    help: "Light state on/off"
+    type: "enum"
+    topic: "fhem/+/+/light"
+    parameters:
+      states: 
+        - 'on'
+        - 'off'
+    label_configs:
+      - source_labels:  ['__value__']
+        regex: "(ON|0)"
+        target_label:   '__value__'
+        replacement: 'on'
+        action: "replace"
+      - source_labels:  ['__value__']
+        regex: "(OFF|1)"
+        target_label:   '__value__'
+        replacement: 'off'
+        action: "replace"
+      - source_labels:  ['__msg_topic__']
+        target_label:   '__topic__'
+      - source_labels:  ["__msg_topic__"]
+        regex: "fhem/([^/]+).*"
+        target_label: "location"
+        replacement: '\1'
+        action: "replace"
+  - name:     'network_ping_ms'
+    help:     'ping response in ms'
+    type:     'histogram'
+    topic:    'network/+/+/ping'
+    parameters:
+      buckets:  
+      - 0.5
+      - 5
+      - 10
+    label_configs:
+      - source_labels:  ['__msg_topic__']
+        target_label:   '__topic__'
+      - source_labels:  ["__msg_topic__"]
+        regex: "network/([^/]+).*"
+        target_label: "network"
+        replacement: '\1'
+        action: "replace"
+      - source_labels:  ["__msg_topic__"]
+        regex: "network/[^/]+/([^/]+).*"
+        target_label: "server"
+        replacement: '\1'
+        action: "replace"

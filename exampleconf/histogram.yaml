@@ -1,0 +1,23 @@
+# histogram metric. with Buckets <= 0.5, 5, 10, +inf
+  - name:     'network_ping_ms'
+    help:     'ping response in ms'
+    type:     'histogram'
+    topic:    'network/+/+/ping'
+    parameters:
+      buckets:  
+      - 0.5
+      - 5
+      - 10
+    label_configs:
+      - source_labels:  ['__msg_topic__']
+        target_label:   '__topic__'
+      - source_labels:  ["__msg_topic__"]
+        regex: "network/([^/]+).*"
+        target_label: "network"
+        replacement: '\1'
+        action: "replace"
+      - source_labels:  ["__msg_topic__"]
+        regex: "network/[^/]+/([^/]+).*"
+        target_label: "server"
+        replacement: '\1'
+        action: "replace"

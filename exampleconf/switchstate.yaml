@@ -1,0 +1,23 @@
+# metric for a switch with the state on and off. 
+# states are case sensitive and must match exactly
+# use label_config to rewrite other values, see below.
+metrics:
+  - name: "fhem_light_state"
+    help: "Light state on/off"
+    type: "enum"
+    topic: "fhem/+/+/light"
+    parameters:
+      states: 
+        - 'on'
+        - 'off'
+    label_configs:
+      - source_labels:  ['__value__'] # replace uppercase ON and 0 with on
+        regex: "(ON|0)" 
+        target_label:   '__value__'
+        replacement: 'on'
+        action: "replace"
+      - source_labels:  ['__value__'] # replace uppercase OFF und 1 with off
+        regex: "(OFF|1)"
+        target_label:   '__value__'
+        replacement: 'off'
+        action: "replace"

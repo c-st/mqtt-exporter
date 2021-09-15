@@ -1,30 +1,31 @@
 #!/usr/bin/env python
 
-from copy import copy, deepcopy
+from copy import deepcopy
 import json
-import prometheus_client as prometheus
 from collections import defaultdict
 import logging
 import argparse
-import paho.mqtt.client as mqtt
-import yaml
 import os
 import re
 import operator
 import time
 import signal
 import sys
+import paho.mqtt.client as mqtt
+import yaml
+import prometheus_client as prometheus
 from yamlreader import yaml_load
 import utils.prometheus_additions
 import version
 
 VERSION = version.__version__
 SUFFIXES_PER_TYPE = {
-    "gauge": [''],  # add at least an empty suffix
+    "gauge": [], 
     "counter": ['total'],
     "counter_absolute": ['total'],
     "summary": ['sum', 'count'],
     "histogram": ['sum', 'count', 'bucket'],
+    "enum": [],
 }
 
 
@@ -187,7 +188,7 @@ def _log_setup(logging_config):
         raise TypeError(f'Invalid log level: {log_level}')
 
     if logfile != '':
-        logging.info('Logging redirected to: ' + logfile)
+        logging.info(f"Logging redirected to: {logfile}")
         # Need to replace the current handler on the root logger:
         file_handler = logging.FileHandler(logfile, 'a')
         formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
@@ -280,12 +281,11 @@ def _update_metrics(metrics, msg):
             if not _apply_label_config(labels, metric['label_configs']):
                 continue
 
+        #  try to convert to float, but leave as is if conversion not possible
         try:
             labels['__value__'] = float(labels['__value__'].replace(',', '.'))
         except ValueError:
-            logging.exception(
-                f"__value__ must be a number, was: {labels['__value__']}, Metric: {metric['name']} on __msg_topic_: {labels['__msg_topic__']}")
-            continue
+            logging.debug(f"Conversion of {labels['__value__']} to float not possible, continue with value as is.")
 
         logging.debug('_update_metrics all labels:')
         logging.debug(labels)
@@ -352,7 +352,9 @@ def _export_to_prometheus(name, metric, labels):
                        'counter': CounterWrapper,
                        'counter_absolute': CounterAbsoluteWrapper,
                        'summary': SummaryWrapper,
-                       'histogram': HistogramWrapper}
+                       'histogram': HistogramWrapper,
+                       'enum': EnumWrapper,
+                    }
     valid_types = metric_wrappers.keys()
     if metric['type'] not in valid_types:
         logging.error(
@@ -378,8 +380,11 @@ def _export_to_prometheus(name, metric, labels):
         metric['prometheus_metric']['parent'] = prometheus_metric
     else:
         prometheus_metric = metric['prometheus_metric']['parent']
-
-    prometheus_metric.update(label_values, value)
+    try:
+        prometheus_metric.update(label_values, value)
+    except ValueError as ve:
+        logging.error(f"Value {value} is not compatible with metric {metric['name']} of type {metric['type']}")
+        logging.exception('ve:')
 
     logging.debug(
         f"_export_to_prometheus metric ({metric['type']}): {name}{labels} updated with value: {value}")
@@ -421,12 +426,10 @@ class GaugeWrapper():
     """
     Wrapper to provide generic interface to Gauge metric
     """
-
     def __init__(self, name, help_text, label_names, *args, **kwargs) -> None:
         self.metric = prometheus.Gauge(
             name, help_text, list(label_names)
         )
-
     def update(self, label_values, value):
         child = self.metric.labels(*label_values)
         child.set(value)
@@ -448,6 +451,10 @@ class CounterWrapper():
         child.inc(value)
         return child
 
+class HistogramWrapper():
+    """
+    Wrapper to provide generic interface to Summary metric
+    """
 
 class CounterAbsoluteWrapper():
     """
@@ -489,7 +496,10 @@ class HistogramWrapper():
     def __init__(self, name, help_text, label_names, *args, **kwargs) -> None:
         params = {}
         if kwargs.get('buckets'):
-            params['buckets'] = kwargs['buckets'].split(',')
+            if isinstance(kwargs['buckets'], str):
+                params['buckets'] = kwargs['buckets'].split(',')
+            else:
+                params['buckets'] = kwargs['buckets']
 
         self.metric = prometheus.Histogram(
             name, help_text, list(label_names), **params
@@ -498,6 +508,22 @@ class HistogramWrapper():
     def update(self, label_values, value):
         child = self.metric.labels(*label_values)
         child.observe(value)
+        return child
+
+
+class EnumWrapper():
+    def __init__(self, name, help_text, label_names, *args, **kwargs) -> None:
+        params = {}
+        if kwargs.get('states'):
+            params['states'] = kwargs['states'] 
+
+        self.metric = prometheus.Enum(
+            name, help_text, list(label_names), **params
+        )
+
+    def update(self, label_values, value):
+        child = self.metric.labels(*label_values)
+        child.state(value)
         return child
 
 
