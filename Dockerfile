@@ -1,4 +1,4 @@
-FROM python:3.10.0-alpine
+FROM python:alpine
 
 LABEL org.opencontainers.image.title=mqtt_exporter
 LABEL org.opencontainers.image.description="Prometheus exporter for MQTT."
@@ -8,12 +8,12 @@ LABEL org.opencontainers.image.source=https://github.com/fhemberger/mqtt_exporte
 
 WORKDIR /usr/src/app
 
-RUN adduser --system --no-create-home --shell /usr/sbin/nologin mqtt_exporter
+RUN adduser --system --no-create-home --shell /usr/sbin/nologin mqttexporter
 COPY *.py requirements-frozen.txt ./
 COPY utils ./utils
 RUN pip install --no-cache-dir -r requirements-frozen.txt
 
-USER mqtt_exporter
+USER mqttexporter
 
 
 EXPOSE 9344
