@@ -1,10 +1,6 @@
 ---
 name: Build and push Docker image
-
-on:
-  push:
-    tags:
-      - "*"
+on: ['push', 'pull_request']
 
 jobs:
   build:
